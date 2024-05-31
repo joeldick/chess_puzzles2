@@ -21,7 +21,7 @@ const polgar_puzzle_307 = //mate in two
   "fen":"1Q6/8/8/8/8/k2K4/8/8 w - - 0 1",
   "moves":"d3-c3;a3-a2;b8-b2"
 }; 
-const currentProblem = polgar_puzzle_307;
+const currentProblem = polgar_puzzle_1;
 
 function App() {
   const [game, setGame] = useState(new Chess(currentProblem.fen));
@@ -29,20 +29,15 @@ function App() {
   const [promptText, setPromptText] = useState(`${currentProblem.first} and ${currentProblem.type}`)
   const [resultText, setResultText] = useState("Make a Move")
   
-  function makeAMove(move) {
-    const result = game.move(move)
-    setFen(game.fen())
-    return result; //null if move is illegal
-  }
-  
   function onDrop(sourceSquare, targetSquare) {
-    const move = makeAMove({
+    const moveResult = game.move({
       from: sourceSquare,
       to: targetSquare
     });
+    setFen(game.fen())
     
     // check if the move made is legal
-    if (move === null) {
+    if (moveResult === null) {
       setResultText("Illegal Move");
       return false;
     }
@@ -60,7 +55,7 @@ function App() {
   return (
     <div className="container" id="PuzzleContainer">
       <div id="PuzzleNumberText">
-        <h2 style={{ marginLeft: "0px" }}>Puzzle #{currentProblem.problemid}</h2>
+        <h2>Puzzle #{currentProblem.problemid}</h2>
       </div>
       <div id="PuzzleBoard">
         <Chessboard id="ChessBoardObject" position={fen} onPieceDrop={onDrop} />
