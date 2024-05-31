@@ -13,7 +13,7 @@ const polgar_puzzle_1 = //mate in one
   "fen":"3q1rk1/5pbp/5Qp1/8/8/2B5/5PPP/6K1 w - - 0 1",
   "moves":"f6-g7"
 }
-const polgar_position_307 = //mate in two
+const polgar_puzzle_307 = //mate in two
 {
   "problemid":307,
   "first":"White to Move",
@@ -21,11 +21,13 @@ const polgar_position_307 = //mate in two
   "fen":"1Q6/8/8/8/8/k2K4/8/8 w - - 0 1",
   "moves":"d3-c3;a3-a2;b8-b2"
 }; 
-const game = new Chess(polgar_puzzle_1.fen);
+const currentProblem = polgar_puzzle_307;
 
 function App() {
+  const [game, setGame] = useState(new Chess(currentProblem.fen));
   const [fen, setFen] = useState(game.fen())
-  const [promptText, setPromptText] = useState("")
+  const [promptText, setPromptText] = useState(`${currentProblem.first} and ${currentProblem.type}`)
+  const [resultText, setResultText] = useState("Make a Move")
   
   function makeAMove(move) {
     const result = game.move(move)
@@ -40,21 +42,37 @@ function App() {
     });
     
     // check if the move made is legal
-    if (move === null) return false;
-    return true;
+    if (move === null) {
+      setResultText("Illegal Move");
+      return false;
+    }
+    else {
+      if (game.isCheckmate()) {
+        setResultText("Checkmate! Good job!");  
+      }
+      else {
+        setResultText("Good Move");
+      }
+      return true;
+    }
   }
 
   return (
-    <>
-      <div id="PuzzleNumber">
-        <h2 style={{marginLeft: "0px"}}> Puzzle #{ polgar_position_307.problemid } </h2>
+    <div className="container" id="PuzzleContainer">
+      <div id="PuzzleNumberText">
+        <h2 style={{ marginLeft: "0px" }}>Puzzle #{currentProblem.problemid}</h2>
       </div>
-      <div id="PuzzleBoard" style={{ height: "400", width: "400px" }}>
+      <div id="PuzzleBoard">
         <Chessboard id="ChessBoardObject" position={fen} onPieceDrop={onDrop} />
       </div>
-      <br></br>
-      <div id="PromptTextArea"></div>
-    </>
+      <br />
+      <div id="PromptText">
+        {promptText}
+      </div>
+      <div id="ResultText">
+        {resultText}
+      </div>
+    </div>
   );
 }
 
