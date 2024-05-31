@@ -4,24 +4,10 @@ import './App.css'
 
 import { Chessboard } from 'react-chessboard'
 import { Chess } from 'chess.js'
+import problems from './assets/problems.json'
 
-const polgar_puzzle_1 = //mate in one
-{
-  "problemid":1,
-  "first":"White to Move",
-  "type":"Mate in One",
-  "fen":"3q1rk1/5pbp/5Qp1/8/8/2B5/5PPP/6K1 w - - 0 1",
-  "moves":"f6-g7"
-}
-const polgar_puzzle_307 = //mate in two
-{
-  "problemid":307,
-  "first":"White to Move",
-  "type":"Mate in Two",
-  "fen":"1Q6/8/8/8/8/k2K4/8/8 w - - 0 1",
-  "moves":"d3-c3;a3-a2;b8-b2"
-}; 
-const currentProblem = polgar_puzzle_1;
+const currentProblem = problems.problems[3];
+console.debug(currentProblem)
 
 function App() {
   const [game, setGame] = useState(new Chess(currentProblem.fen));
