@@ -1,26 +1,29 @@
-import { useState } from 'react'
-
+import { useEffect, useState } from 'react'
 import './App.css'
-
 import { Chessboard } from 'react-chessboard'
 import { Chess } from 'chess.js'
 import problems from './assets/problems.json'
 
-const currentProblem = problems.problems[3];
-console.debug(currentProblem)
-
 function App() {
+  const [currentProblemIndex, setCurrentProblemIndex] = useState(1);
+  const [currentProblem, setCurrentProblem] = useState(problems.problems[currentProblemIndex -1]);
   const [game, setGame] = useState(new Chess(currentProblem.fen));
-  const [fen, setFen] = useState(game.fen())
-  const [promptText, setPromptText] = useState(`${currentProblem.first} and ${currentProblem.type}`)
-  const [resultText, setResultText] = useState("Make a Move")
+  const [promptText, setPromptText] = useState(`${currentProblem.first} and ${currentProblem.type}`);
+  const [resultText, setResultText] = useState("Make a Move");
   
+  useEffect(() => {
+    const problem = problems.problems[currentProblemIndex - 1];
+    setCurrentProblem(problem)
+    setGame(new Chess(problem.fen));
+    setPromptText(`${problem.first} and ${problem.type}`);
+    setResultText('Make a Move');
+  }, [currentProblemIndex]);
+
   function onDrop(sourceSquare, targetSquare) {
     const moveResult = game.move({
       from: sourceSquare,
       to: targetSquare
     });
-    setFen(game.fen())
     
     // check if the move made is legal
     if (moveResult === null) {
@@ -29,7 +32,11 @@ function App() {
     }
     else {
       if (game.isCheckmate()) {
-        setResultText("Checkmate! Good job!");  
+        setResultText("Checkmate! Good job!");
+        setTimeout(() => {
+          setCurrentProblemIndex((currentProblemIndex + 1) % problems.problems.length);
+        }
+        ,1000)
       }
       else {
         setResultText("Good Move");
@@ -44,7 +51,7 @@ function App() {
         <h2>Puzzle #{currentProblem.problemid}</h2>
       </div>
       <div id="ChessBoardContainer">
-        <Chessboard id="ChessBoard" position={fen} onPieceDrop={onDrop} />
+        <Chessboard id="ChessBoard" position={game.fen()} onPieceDrop={onDrop} />
       </div>
       <div id="PromptText">
         {promptText}
