@@ -43,10 +43,9 @@ function App() {
       <div id="PuzzleNumberText">
         <h2>Puzzle #{currentProblem.problemid}</h2>
       </div>
-      <div id="PuzzleBoard">
-        <Chessboard id="ChessBoardObject" position={fen} onPieceDrop={onDrop} />
+      <div id="ChessBoardContainer">
+        <Chessboard id="ChessBoard" position={fen} onPieceDrop={onDrop} />
       </div>
-      <br />
       <div id="PromptText">
         {promptText}
       </div>
