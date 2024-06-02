@@ -12,18 +12,18 @@
   gap: 1rem;
   width: 100%;
   max-width: 100%;
+  box-sizing: border-box;
 }
 
 #PuzzleBoard
 {
-  margin-left: 0px;
   width: 100%;
   max-width: 400px;
+  box-sizing: border-box;
 }
 
-#PuzzleNumberText,
-#PromptText,
-#ResultText 
-{
-  margin-left: 0px;
+@media (max-width: 400px) {
+  #PuzzleBoard {
+    width: 100%; /* Ensure the board takes the full width of the container */
+  }
 }
