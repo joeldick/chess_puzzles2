@@ -4,6 +4,8 @@ import { Chessboard } from 'react-chessboard'
 import { Chess } from 'chess.js'
 import problems from './assets/problems.json'
 
+const numberOfPuzzles = problems.problems.length;
+
 function App() {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
   const [currentProblem, setCurrentProblem] = useState(problems.problems[currentProblemIndex]);
@@ -18,6 +20,7 @@ function App() {
     setGame(new Chess(problem.fen));
     setPromptText(`${problem.first} and ${problem.type}`);
     setResultText('Make a Move');
+    setSelectedProblemID(currentProblemIndex);
   }, [currentProblemIndex]);
 
   function goToProblem (problemID) {
@@ -39,7 +42,7 @@ function App() {
       if (game.isCheckmate()) {
         setResultText("Checkmate! Good job!");
         setTimeout(() => {
-          setCurrentProblemIndex((currentProblemIndex + 1) % problems.problems.length);
+          setCurrentProblemIndex((currentProblemIndex + 1) % numberOfPuzzles);
         }
         ,1000)
       }
@@ -59,7 +62,7 @@ function App() {
           value={selectedProblemID} 
           onChange={(e) => setSelectedProblemID(parseInt(e.target.value))}
         >
-          {problems.problems.map((_, index) => (
+          {Array.from({ length: numberOfPuzzles}, (_, index) => (
             <option key={index} value={index}>
               {index + 1}
             </option>
