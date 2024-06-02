@@ -5,14 +5,14 @@ import { Chess } from 'chess.js'
 import problems from './assets/problems.json'
 
 function App() {
-  const [currentProblemIndex, setCurrentProblemIndex] = useState(1);
-  const [currentProblem, setCurrentProblem] = useState(problems.problems[currentProblemIndex -1]);
+  const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
+  const [currentProblem, setCurrentProblem] = useState(problems.problems[currentProblemIndex]);
   const [game, setGame] = useState(new Chess(currentProblem.fen));
   const [promptText, setPromptText] = useState(`${currentProblem.first} and ${currentProblem.type}`);
   const [resultText, setResultText] = useState("Make a Move");
   
   useEffect(() => {
-    const problem = problems.problems[currentProblemIndex - 1];
+    const problem = problems.problems[currentProblemIndex];
     setCurrentProblem(problem)
     setGame(new Chess(problem.fen));
     setPromptText(`${problem.first} and ${problem.type}`);
