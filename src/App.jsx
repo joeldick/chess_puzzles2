@@ -10,6 +10,7 @@ function App() {
   const [game, setGame] = useState(new Chess(currentProblem.fen));
   const [promptText, setPromptText] = useState(`${currentProblem.first} and ${currentProblem.type}`);
   const [resultText, setResultText] = useState("Make a Move");
+  const [selectedProblemID, setSelectedProblemID] = useState(currentProblemIndex);
   
   useEffect(() => {
     const problem = problems.problems[currentProblemIndex];
@@ -18,6 +19,10 @@ function App() {
     setPromptText(`${problem.first} and ${problem.type}`);
     setResultText('Make a Move');
   }, [currentProblemIndex]);
+
+  function goToProblem (problemID) {
+    setCurrentProblemIndex(problemID)
+  }
 
   function onDrop(sourceSquare, targetSquare) {
     const moveResult = game.move({
@@ -46,20 +51,37 @@ function App() {
   }
 
   return (
-    <div className="container" id="PuzzleContainer">
-      <div id="PuzzleNumberText">
-        <h2>Puzzle #{currentProblem.problemid}</h2>
+    <>
+      <div>
+        <label htmlFor="problem-select">Select problem number: </label>
+        <select 
+          id="problem-select"
+          value={selectedProblemID} 
+          onChange={(e) => setSelectedProblemID(parseInt(e.target.value))}
+        >
+          {problems.problems.map((_, index) => (
+            <option key={index} value={index}>
+              {index + 1}
+            </option>
+          ))}
+        </select>
+        <button onClick={() => goToProblem(selectedProblemID)}>Go</button>
       </div>
-      <div id="ChessBoardContainer">
-        <Chessboard id="ChessBoard" position={game.fen()} onPieceDrop={onDrop} />
+      <div className="container" id="PuzzleContainer">
+        <div id="PuzzleNumberText">
+          <h2>Puzzle #{currentProblem.problemid}</h2>
+        </div>
+        <div id="ChessBoardContainer">
+          <Chessboard id="ChessBoard" position={game.fen()} onPieceDrop={onDrop} />
+        </div>
+        <div id="PromptText">
+          {promptText}
+        </div>
+        <div id="ResultText">
+          {resultText}
+        </div>
       </div>
-      <div id="PromptText">
-        {promptText}
-      </div>
-      <div id="ResultText">
-        {resultText}
-      </div>
-    </div>
+    </>
   );
 }
 
