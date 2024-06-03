@@ -13,45 +13,43 @@ function App() {
   const [promptText, setPromptText] = useState(`${currentProblem.first} and ${currentProblem.type}`);
   const [resultText, setResultText] = useState("Make a Move");
   const [selectedProblemID, setSelectedProblemID] = useState(currentProblemIndex);
-  
-  useEffect(() => {
-    const problem = problems.problems[currentProblemIndex];
-    setCurrentProblem(problem)
-    setGame(new Chess(problem.fen));
-    setPromptText(`${problem.first} and ${problem.type}`);
-    setResultText('Make a Move');
-    setSelectedProblemID(currentProblemIndex);
-  }, [currentProblemIndex]);
+  const [gamePosition, setGamePosition] = useState(game.fen())
 
   function goToProblem (problemID) {
-    setCurrentProblemIndex(problemID)
+    const problem = problems.problems[problemID];
+    setCurrentProblemIndex(problemID);
+    setCurrentProblem(problem);
+    const newGame = new Chess(problem.fen);
+    setGame(newGame);
+    setGamePosition(newGame.fen());
+    setPromptText(`${problem.first} and ${problem.type}`);
+    setResultText('Make a Move');
+    setSelectedProblemID(problemID);
   }
 
   function onDrop(sourceSquare, targetSquare, piece) {
-    const moveResult = game.move({
+    const move = game.move({
       from: sourceSquare,
       to: targetSquare,
-      promotion: piece[1].toLowerCase() ?? "q",
+      promotion: piece[1].toLowerCase() ?? "q"
     });
-    
-    // check if the move made is legal
-    if (moveResult === null) {
-      setResultText("Illegal Move");
-      return false;
+    setGamePosition(game.fen());
+
+    // illegal move
+    if (move === null) return false;
+
+    if (game.isCheckmate()) {
+      setResultText("Checkmate! Good job!");
+      setTimeout(() => {
+        const nextProblem = (currentProblemIndex + 1) % numberOfPuzzles;
+        goToProblem(nextProblem);
+      }
+      ,500)
     }
     else {
-      if (game.isCheckmate()) {
-        setResultText("Checkmate! Good job!");
-        setTimeout(() => {
-          setCurrentProblemIndex((currentProblemIndex + 1) % numberOfPuzzles);
-        }
-        ,1000)
-      }
-      else {
-        setResultText("Good Move");
-      }
-      return true;
+      setResultText("Good Move");
     }
+    return true;
   }
 
   return (
@@ -78,7 +76,7 @@ function App() {
         <div id="ChessBoardContainer">
           <Chessboard 
             id="ChessBoard" 
-            position={game.fen()} 
+            position={gamePosition} 
             onPieceDrop={onDrop}
             customBoardStyle={{
               borderRadius: "4px",
