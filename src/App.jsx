@@ -27,10 +27,11 @@ function App() {
     setCurrentProblemIndex(problemID)
   }
 
-  function onDrop(sourceSquare, targetSquare) {
+  function onDrop(sourceSquare, targetSquare, piece) {
     const moveResult = game.move({
       from: sourceSquare,
-      to: targetSquare
+      to: targetSquare,
+      promotion: piece[1].toLowerCase() ?? "q",
     });
     
     // check if the move made is legal
@@ -75,7 +76,19 @@ function App() {
           <h2>Puzzle #{currentProblem.problemid}</h2>
         </div>
         <div id="ChessBoardContainer">
-          <Chessboard id="ChessBoard" position={game.fen()} onPieceDrop={onDrop} />
+          <Chessboard 
+            id="ChessBoard" 
+            position={game.fen()} 
+            onPieceDrop={onDrop}
+            customBoardStyle={{
+              borderRadius: "4px",
+              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
+            }}
+            customNotationStyle={{
+              fontSize: '12px',
+              fondWeight: 'bold'
+            }}
+          />
         </div>
         <div id="PromptText">
           {promptText}
