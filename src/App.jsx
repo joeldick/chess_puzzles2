@@ -8,17 +8,21 @@ const numberOfPuzzles = problems.problems.length;
 
 function App() {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
-  const [currentProblem, setCurrentProblem] = useState(problems.problems[currentProblemIndex]);
-  const [game, setGame] = useState(new Chess(currentProblem.fen));
-  const [promptText, setPromptText] = useState(`${currentProblem.first} and ${currentProblem.type}`);
-  const [resultText, setResultText] = useState("Make a Move");
-  const [selectedProblemID, setSelectedProblemID] = useState(currentProblemIndex);
-  const [gamePosition, setGamePosition] = useState(game.fen())
+  const [game, setGame] = useState(new Chess());
+  const [promptText, setPromptText] = useState("");
+  const [resultText, setResultText] = useState("");
+  const [selectedProblemID, setSelectedProblemID] = useState();
+  const [gamePosition, setGamePosition] = useState()
+
+  useEffect (() => {
+    goToProblem(0);
+  }
+  , []
+  );
 
   function goToProblem (problemID) {
     const problem = problems.problems[problemID];
     setCurrentProblemIndex(problemID);
-    setCurrentProblem(problem);
     const newGame = new Chess(problem.fen);
     setGame(newGame);
     setGamePosition(newGame.fen());
@@ -71,7 +75,7 @@ function App() {
       </div>
       <div className="container" id="PuzzleContainer">
         <div id="PuzzleNumberText">
-          <h2>Puzzle #{currentProblem.problemid}</h2>
+          <h2>Puzzle #{problems.problems[currentProblemIndex].problemid}</h2>
         </div>
         <div id="ChessBoardContainer">
           <Chessboard 
