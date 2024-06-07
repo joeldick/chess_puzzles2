@@ -11,6 +11,7 @@ function App() {
   const [game, setGame] = useState(new Chess());
   const [gamePosition, setGamePosition] = useState("");
   const [correctMoves, setCorrectMoves] = useState([]);
+  const [correctMoveIndex, setCorrectMovesIndex] = useState(0);
   const [promptText, setPromptText] = useState("");
   const [resultText, setResultText] = useState("");
   const [selectedProblemID, setSelectedProblemID] = useState(0);
@@ -37,6 +38,7 @@ function App() {
     const problem = problems.problems[problemID];
     const newCorrectMoves = unpackSolution(problem.moves);
     setCorrectMoves(newCorrectMoves);
+    setCorrectMovesIndex(0);
     const newGame = new Chess(problem.fen);
     setGamePosition(newGame.fen());
     setGame(newGame);
@@ -49,25 +51,29 @@ function App() {
     console.debug(sourceSquare);
     console.debug(targetSquare);
     console.debug(piece);
-    console.debug(correctMoves[0]);
+    console.debug(correctMoves[correctMoveIndex]);
 
-  // Destructure the first correct move
-  const { from, to, promotion } = correctMoves[0];
+    // Destructure the first correct move
+    const { from, to, promotion } = correctMoves[correctMoveIndex];
 
-  // Check if the move being made is correct
-  if (sourceSquare === from && targetSquare === to && (!promotion || promotion === piece[1]?.toLowerCase())) {
-    console.debug("Correct move");
-  } else {
-    console.debug("Incorrect move");
-    return false;
-  }
+    // Check if the move being made is correct
+    if (sourceSquare === from && 
+        targetSquare === to && 
+        (!promotion || promotion === piece[1]?.toLowerCase())) {
+      console.debug("Correct move");
+      setResultText("Good Move!");
+    } 
+    else {
+      console.debug("Incorrect move");
+      setResultText("Sorry. Incorrect :(");
+      return false;
+    }
 
     const move = game.move({
       from: sourceSquare,
       to: targetSquare,
       promotion: piece[1]?.toLowerCase() ?? "q",
     });
-
     if (move === null) return false;
 
     setGamePosition(game.fen());
@@ -78,9 +84,20 @@ function App() {
         const nextProblem = (currentProblemIndex + 1) % numberOfPuzzles;
         goToProblem(nextProblem);
       }, 500);
-    } else {
-      setResultText("Good Move");
     }
+
+    //computer makes the next move, if there is one
+    const nextMoveIndex = correctMoveIndex + 1;
+
+    if (nextMoveIndex < correctMoves.length){
+      setTimeout(() => {
+        const computerMove = correctMoves[nextMoveIndex];
+        game.move(computerMove);
+        setGamePosition(game.fen())
+        setCorrectMovesIndex(nextMoveIndex + 1);
+      }, 300)
+    }
+
     return true;
   }
 
