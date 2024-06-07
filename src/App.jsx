@@ -53,52 +53,58 @@ function App() {
     console.debug(piece);
     console.debug(correctMoves[correctMoveIndex]);
 
-    // Destructure the first correct move
-    const { from, to, promotion } = correctMoves[correctMoveIndex];
+    const currentMove = correctMoves[correctMoveIndex];
+
+    if (!currentMove) {
+      setResultText("Invalid move. No further moves expected.");
+      return false;
+    }
+
+    const { from, to, promotion } = currentMove;
 
     // Check if the move being made is correct
     if (sourceSquare === from && 
         targetSquare === to && 
         (!promotion || promotion === piece[1]?.toLowerCase())) {
       console.debug("Correct move");
-      setResultText("Good Move!");
+      const move = game.move({
+        from: sourceSquare,
+        to: targetSquare,
+        promotion: piece[1]?.toLowerCase() ?? "q",
+      });
+
+      if (move === null) return false;
+  
+      setGamePosition(game.fen());
+      const nextMoveIndex = correctMoveIndex + 1;
+  
+      if (game.isCheckmate()) {
+        setResultText("Checkmate! Good job!");
+        setTimeout(() => {
+          const nextProblem = (currentProblemIndex + 1) % numberOfPuzzles;
+          goToProblem(nextProblem);
+        }, 500);
+      }
+      else {
+        setResultText("Good Move!");
+        
+        //computer makes the next move, if there is one
+        if (nextMoveIndex < correctMoves.length){
+          setTimeout(() => {
+            const computerMove = correctMoves[nextMoveIndex];
+            game.move(computerMove);
+            setGamePosition(game.fen())
+            setCorrectMovesIndex(nextMoveIndex + 1);
+          }, 300)
+        }
+      }
+      return true;
     } 
     else {
       console.debug("Incorrect move");
       setResultText("Sorry. Incorrect :(");
       return false;
     }
-
-    const move = game.move({
-      from: sourceSquare,
-      to: targetSquare,
-      promotion: piece[1]?.toLowerCase() ?? "q",
-    });
-    if (move === null) return false;
-
-    setGamePosition(game.fen());
-
-    if (game.isCheckmate()) {
-      setResultText("Checkmate! Good job!");
-      setTimeout(() => {
-        const nextProblem = (currentProblemIndex + 1) % numberOfPuzzles;
-        goToProblem(nextProblem);
-      }, 500);
-    }
-
-    //computer makes the next move, if there is one
-    const nextMoveIndex = correctMoveIndex + 1;
-
-    if (nextMoveIndex < correctMoves.length){
-      setTimeout(() => {
-        const computerMove = correctMoves[nextMoveIndex];
-        game.move(computerMove);
-        setGamePosition(game.fen())
-        setCorrectMovesIndex(nextMoveIndex + 1);
-      }, 300)
-    }
-
-    return true;
   }
 
   return (
