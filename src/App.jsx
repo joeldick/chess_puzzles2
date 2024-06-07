@@ -11,7 +11,7 @@ function App() {
   const [game, setGame] = useState(new Chess());
   const [gamePosition, setGamePosition] = useState("");
   const [correctMoves, setCorrectMoves] = useState([]);
-  const [correctMoveIndex, setCorrectMovesIndex] = useState(0);
+  const [correctMoveIndex, setCorrectMoveIndex] = useState(0);
   const [promptText, setPromptText] = useState("");
   const [resultText, setResultText] = useState("");
   const [selectedProblemID, setSelectedProblemID] = useState(0);
@@ -21,11 +21,7 @@ function App() {
       const [from, toAndPromotion] = move.split("-");
       const to = toAndPromotion.slice(0, 2);
       const promotion = toAndPromotion.length > 2 ? toAndPromotion[2] : undefined;
-      const result = { from, to };
-      if (promotion) {
-        result.promotion = promotion;
-      }
-      return result;
+      return { from, to, promotion };
     });
   }
 
@@ -38,7 +34,7 @@ function App() {
     const problem = problems.problems[problemID];
     const newCorrectMoves = unpackSolution(problem.moves);
     setCorrectMoves(newCorrectMoves);
-    setCorrectMovesIndex(0);
+    setCorrectMoveIndex(0);
     const newGame = new Chess(problem.fen);
     setGamePosition(newGame.fen());
     setGame(newGame);
@@ -48,11 +44,6 @@ function App() {
   }
 
   function onDrop(sourceSquare, targetSquare, piece) {
-    console.debug(sourceSquare);
-    console.debug(targetSquare);
-    console.debug(piece);
-    console.debug(correctMoves[correctMoveIndex]);
-
     const currentMove = correctMoves[correctMoveIndex];
 
     if (!currentMove) {
@@ -66,7 +57,6 @@ function App() {
     if (sourceSquare === from && 
         targetSquare === to && 
         (!promotion || promotion === piece[1]?.toLowerCase())) {
-      console.debug("Correct move");
       const move = game.move({
         from: sourceSquare,
         to: targetSquare,
@@ -76,7 +66,6 @@ function App() {
       if (move === null) return false;
   
       setGamePosition(game.fen());
-      const nextMoveIndex = correctMoveIndex + 1;
   
       if (game.isCheckmate()) {
         setResultText("Checkmate! Good job!");
@@ -84,24 +73,25 @@ function App() {
           const nextProblem = (currentProblemIndex + 1) % numberOfPuzzles;
           goToProblem(nextProblem);
         }, 500);
+        return true;
       }
-      else {
-        setResultText("Good Move!");
-        
-        //computer makes the next move, if there is one
-        if (nextMoveIndex < correctMoves.length){
-          setTimeout(() => {
-            const computerMove = correctMoves[nextMoveIndex];
-            game.move(computerMove);
-            setGamePosition(game.fen())
-            setCorrectMovesIndex(nextMoveIndex + 1);
-          }, 300)
-        }
+      
+      setResultText("Good Move!");
+      
+      //computer makes the next move, if there is one
+      const nextMoveIndex = correctMoveIndex + 1;
+
+      if (nextMoveIndex < correctMoves.length){
+        setTimeout(() => {
+          const computerMove = correctMoves[nextMoveIndex];
+          game.move(computerMove);
+          setGamePosition(game.fen())
+          setCorrectMoveIndex(nextMoveIndex + 1);
+        }, 300)
       }
       return true;
     } 
     else {
-      console.debug("Incorrect move");
       setResultText("Sorry. Incorrect :(");
       return false;
     }
