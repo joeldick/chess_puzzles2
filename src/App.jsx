@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import './App.css';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
@@ -15,6 +16,8 @@ function App() {
   const [promptText, setPromptText] = useState("");
   const [resultText, setResultText] = useState("");
   const [selectedProblemID, setSelectedProblemID] = useState(0);
+
+  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
 
   function unpackSolution(solutionString) {
     return solutionString.split(";").map(move => {
@@ -99,6 +102,24 @@ function App() {
 
   return (
     <>
+
+        <div className="login-logout-buttons">
+        {!isAuthenticated ? (
+          <div>
+          <button className='login-button' onClick={() => loginWithRedirect()}>
+            Log In
+          </button>
+          <p>Please log in.</p>  
+          </div>
+        ) : (
+          <div>
+          <button className='logout-button' onClick={() => logout({ returnTo: window.location.origin})}>
+            Log Out
+          </button>
+          <p>Hi {user.name}. You are logged in.</p>
+          </div>
+        )}
+      </div>
       <div>
         <label htmlFor="problem-select">Select problem number: </label>
         <select 
