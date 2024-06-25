@@ -4,6 +4,8 @@ import './App.css';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import problems from './assets/problems.json';
+import { db } from './firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 const numberOfPuzzles = problems.problems.length;
 
@@ -19,6 +21,39 @@ function App() {
 
   const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
 
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      console.debug(user);
+      loadUserProgress(user.sub);
+    }
+  }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    goToProblem(currentProblemIndex);
+  }, [currentProblemIndex]);
+
+  const saveUserProgress = async (userId, problemIndex) => {
+    try {
+      await setDoc(doc(db, "users", userId), {
+        currentProblemIndex: problemIndex
+      });
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
+
+  const loadUserProgress = async (userId) => {
+    const docRef = doc(db, "users", userId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+       console.debug("Current problem is", docSnap.data().currentProblemIndex);
+       setCurrentProblemIndex(docSnap.data().currentProblemIndex);
+    } else {
+      console.log("No such document.");
+    }
+  }
+
   function unpackSolution(solutionString) {
     return solutionString.split(";").map(move => {
       const [from, toAndPromotion] = move.split("-");
@@ -27,10 +62,6 @@ function App() {
       return { from, to, promotion };
     });
   }
-
-  useEffect(() => {
-    goToProblem(0);
-  }, []);
 
   function goToProblem(problemID) {
     setCurrentProblemIndex(problemID);
@@ -75,6 +106,9 @@ function App() {
         setTimeout(() => {
           const nextProblem = (currentProblemIndex + 1) % numberOfPuzzles;
           goToProblem(nextProblem);
+          if (isAuthenticated && user) {
+            saveUserProgress(user.sub, nextProblem)
+          }
         }, 500);
         return true;
       }
