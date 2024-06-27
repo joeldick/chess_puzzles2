@@ -145,10 +145,10 @@ function App() {
 
   return (
     <>
-      <header>
+      <div id="main-header">
         <h1>Chess Puzzles</h1>
-      </header>
-      <div className="login-container">
+      </div>
+      <div id="login-container">
         {!user ? (
           <div>
             <button className='login-button' onClick={() => signInWithPopup(auth, provider)}>
@@ -166,13 +166,13 @@ function App() {
         )}
       </div>
       <div id="problem-select-container">
-        <label htmlFor="problem-select">Select problem number: </label>
+        <label id='select-problem-text' htmlFor="problem-select">Select problem number: </label>
         <button className="navigation-button" onClick={() => setCurrentProblemIndex((currentProblemIndex - 1 + numberOfPuzzles) % numberOfPuzzles)}>
           &#9664;
         </button>
-        <select
+        <select 
           id="problem-select"
-          value={selectedProblemID}
+          value={selectedProblemID} 
           onChange={(e) => setSelectedProblemID(parseInt(e.target.value))}
         >
           {Array.from({ length: numberOfPuzzles }, (_, index) => (
@@ -191,9 +191,9 @@ function App() {
           <h2>Puzzle #{problems.problems[currentProblemIndex].problemid}</h2>
         </div>
         <div id="ChessBoardContainer">
-          <Chessboard
-            id="ChessBoard"
-            position={gamePosition}
+          <Chessboard 
+            id="ChessBoard" 
+            position={gamePosition} 
             onPieceDrop={onDrop}
             customBoardStyle={{
               borderRadius: "4px",
