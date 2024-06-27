@@ -19,7 +19,7 @@ function App() {
   const [resultText, setResultText] = useState("");
   const [selectedProblemID, setSelectedProblemID] = useState(0);
   const [user, setUser] = useState(null);
-  
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -51,7 +51,7 @@ function App() {
     try {
       const docRef = doc(db, "users", userId);
       const docSnap = await getDoc(docRef);
-  
+
       if (docSnap.exists()) {
         setCurrentProblemIndex(docSnap.data().currentProblemIndex);
       } else {
@@ -97,9 +97,9 @@ function App() {
     const { from, to, promotion } = currentMove;
 
     // Check if the move being made is correct
-    if (sourceSquare === from && 
-        targetSquare === to && 
-        (!promotion || promotion === piece[1]?.toLowerCase())) {
+    if (sourceSquare === from &&
+      targetSquare === to &&
+      (!promotion || promotion === piece[1]?.toLowerCase())) {
       const move = game.move({
         from: sourceSquare,
         to: targetSquare,
@@ -107,9 +107,9 @@ function App() {
       });
 
       if (move === null) return false;
-  
+
       setGamePosition(game.fen());
-  
+
       if (game.isCheckmate()) {
         setResultText("Checkmate! Good job!");
         setTimeout(() => {
@@ -121,13 +121,13 @@ function App() {
         }, 500);
         return true;
       }
-      
+
       setResultText("Good Move!");
-      
+
       //computer makes the next move, if there is one
       const nextMoveIndex = correctMoveIndex + 1;
 
-      if (nextMoveIndex < correctMoves.length){
+      if (nextMoveIndex < correctMoves.length) {
         setTimeout(() => {
           const computerMove = correctMoves[nextMoveIndex];
           game.move(computerMove);
@@ -136,7 +136,8 @@ function App() {
         }, 300)
       }
       return true;
-    } else {
+    }
+    else {
       setResultText("Sorry. Incorrect :(");
       return false;
     }
@@ -144,28 +145,34 @@ function App() {
 
   return (
     <>
-      <div className="login-logout-buttons">
+      <header>
+        <h1>Chess Puzzles</h1>
+      </header>
+      <div className="login-container">
         {!user ? (
           <div>
             <button className='login-button' onClick={() => signInWithPopup(auth, provider)}>
               Log In
             </button>
-            <p>Please log in.</p>  
+            <p id="login-status">Please log in.</p>
           </div>
         ) : (
           <div>
             <button className='logout-button' onClick={() => signOut(auth)}>
               Log Out
             </button>
-            <p>Hi {user.displayName}. You are logged in.</p>
+            <p id="login-status">Hi {user.displayName}. You are logged in.</p>
           </div>
         )}
       </div>
-      <div>
+      <div id="problem-select-container">
         <label htmlFor="problem-select">Select problem number: </label>
-        <select 
+        <button className="navigation-button" onClick={() => setCurrentProblemIndex((currentProblemIndex - 1 + numberOfPuzzles) % numberOfPuzzles)}>
+          &#9664;
+        </button>
+        <select
           id="problem-select"
-          value={selectedProblemID} 
+          value={selectedProblemID}
           onChange={(e) => setSelectedProblemID(parseInt(e.target.value))}
         >
           {Array.from({ length: numberOfPuzzles }, (_, index) => (
@@ -174,16 +181,19 @@ function App() {
             </option>
           ))}
         </select>
-        <button onClick={() => goToProblem(selectedProblemID)}>Go</button>
+        <button id="go-button" onClick={() => goToProblem(selectedProblemID)}>Go</button>
+        <button className="navigation-button" onClick={() => setCurrentProblemIndex((currentProblemIndex + 1) % numberOfPuzzles)}>
+          &#9654;
+        </button>
       </div>
       <div className="container" id="PuzzleContainer">
         <div id="PuzzleNumberText">
           <h2>Puzzle #{problems.problems[currentProblemIndex].problemid}</h2>
         </div>
         <div id="ChessBoardContainer">
-          <Chessboard 
-            id="ChessBoard" 
-            position={gamePosition} 
+          <Chessboard
+            id="ChessBoard"
+            position={gamePosition}
             onPieceDrop={onDrop}
             customBoardStyle={{
               borderRadius: "4px",
@@ -206,7 +216,7 @@ function App() {
         </div>
       </div>
     </>
-  );
-}
+  );  
+}  
 
 export default App;
