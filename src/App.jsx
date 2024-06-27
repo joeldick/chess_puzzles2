@@ -43,14 +43,18 @@ function App() {
   }
 
   const loadUserProgress = async (userId) => {
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-       console.debug("Current problem is", docSnap.data().currentProblemIndex);
-       setCurrentProblemIndex(docSnap.data().currentProblemIndex);
-    } else {
-      console.log("No such document.");
+    try {
+      const docRef = doc(db, "users", userId);
+      const docSnap = await getDoc(docRef);
+  
+      if (docSnap.exists()) {
+         setCurrentProblemIndex(docSnap.data().currentProblemIndex);
+      } else {
+        await setDoc(docRef, { currentProblemIndex: 0 });
+        setCurrentProblemIndex(0);
+      }
+    } catch (e) {
+      console.error("Error getting document: ", e);
     }
   }
 
@@ -147,7 +151,7 @@ function App() {
           </div>
         ) : (
           <div>
-          <button className='logout-button' onClick={() => logout({ returnTo: window.location.origin})}>
+          <button className='logout-button' onClick={() => logout({ returnTo: window.location.origin })}>
             Log Out
           </button>
           <p>Hi {user.name}. You are logged in.</p>
@@ -187,6 +191,9 @@ function App() {
               fontWeight: 'bold'
             }}
           />
+        </div>
+        <div id="FENText">
+          FEN: {gamePosition}
         </div>
         <div id="PromptText">
           {promptText}
