@@ -24,7 +24,10 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-        loadUserProgress(user.uid);
+        loadUserProgress(user.uid).then(progress => {
+          const nextUnsolved = Array.from({ length: numberOfPuzzles }, (_, i) => i + 1).find(i => !progress[i]?.solved);
+          setCurrentProblemIndex((nextUnsolved - 1) || 0);
+        });
       } else {
         setUser(null);
       }
@@ -37,13 +40,15 @@ function App() {
     goToProblem(currentProblemIndex);
   }, [currentProblemIndex]);
 
-  const saveUserProgress = async (userId, problemIndex) => {
+  const saveUserProgress = async (userId, problemId, solved) => {
     try {
-      await setDoc(doc(db, "users", userId), {
-        currentProblemIndex: problemIndex
-      });
+      const userDocRef = doc(db, "users", userId);
+      const problemData = { solved: solved };
+
+      await setDoc(userDocRef, { [problemId]: problemData }, { merge: true });
+
     } catch (e) {
-      console.error("Error adding document: ", e);
+      console.error("Error saving document: ", e);
     }
   }
 
@@ -53,13 +58,14 @@ function App() {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        setCurrentProblemIndex(docSnap.data().currentProblemIndex);
+        return docSnap.data();
       } else {
-        await setDoc(docRef, { currentProblemIndex: 0 });
-        setCurrentProblemIndex(0);
+        console.log("No such document");
+        return {};
       }
     } catch (e) {
       console.error("Error getting document: ", e);
+      return {};
     }
   }
 
@@ -113,18 +119,17 @@ function App() {
       if (game.isCheckmate()) {
         setResultText("Checkmate! Good job!");
         setTimeout(() => {
-          const nextProblem = (currentProblemIndex + 1) % numberOfPuzzles;
-          goToProblem(nextProblem);
           if (user) {
-            saveUserProgress(user.uid, nextProblem);
+            saveUserProgress(user.uid, currentProblemIndex + 1, true)
           }
+          setCurrentProblemIndex(currentProblemIndex + 1);
         }, 500);
         return true;
       }
 
       setResultText("Good Move!");
 
-      //computer makes the next move, if there is one
+      // computer makes the next move, if there is one
       const nextMoveIndex = correctMoveIndex + 1;
 
       if (nextMoveIndex < correctMoves.length) {
