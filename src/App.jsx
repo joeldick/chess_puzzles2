@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
 import './App.css';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import problems from './assets/problems.json';
-import { db } from './firebase';
+import { db, auth, provider } from './firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 
 const numberOfPuzzles = problems.problems.length;
 
@@ -18,15 +18,20 @@ function App() {
   const [promptText, setPromptText] = useState("");
   const [resultText, setResultText] = useState("");
   const [selectedProblemID, setSelectedProblemID] = useState(0);
-
-  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
-
+  const [user, setUser] = useState(null);
+  
   useEffect(() => {
-    if (isAuthenticated && user) {
-      console.debug(user);
-      loadUserProgress(user.sub);
-    }
-  }, [isAuthenticated, user]);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        loadUserProgress(user.uid);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     goToProblem(currentProblemIndex);
@@ -110,8 +115,8 @@ function App() {
         setTimeout(() => {
           const nextProblem = (currentProblemIndex + 1) % numberOfPuzzles;
           goToProblem(nextProblem);
-          if (isAuthenticated && user) {
-            saveUserProgress(user.sub, nextProblem)
+          if (user) {
+            saveUserProgress(user.uid, nextProblem);
           }
         }, 500);
         return true;
@@ -140,21 +145,20 @@ function App() {
 
   return (
     <>
-
         <div className="login-logout-buttons">
-        {!isAuthenticated ? (
+        {!user ? (
           <div>
-          <button className='login-button' onClick={() => loginWithRedirect()}>
+          <button className='login-button' onClick={() => signInWithPopup(auth, provider)}>
             Log In
           </button>
           <p>Please log in.</p>  
           </div>
         ) : (
           <div>
-          <button className='logout-button' onClick={() => logout({ returnTo: window.location.origin })}>
+          <button className='logout-button' onClick={() => signOut(auth)}>
             Log Out
           </button>
-          <p>Hi {user.name}. You are logged in.</p>
+          <p>Hi {user.displayName}. You are logged in.</p>
           </div>
         )}
       </div>
