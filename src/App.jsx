@@ -19,7 +19,7 @@ function App() {
   const [resultText, setResultText] = useState("");
   const [selectedProblemID, setSelectedProblemID] = useState(0);
   const [user, setUser] = useState(null);
-  
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -53,7 +53,7 @@ function App() {
       const docSnap = await getDoc(docRef);
   
       if (docSnap.exists()) {
-         setCurrentProblemIndex(docSnap.data().currentProblemIndex);
+        setCurrentProblemIndex(docSnap.data().currentProblemIndex);
       } else {
         await setDoc(docRef, { currentProblemIndex: 0 });
         setCurrentProblemIndex(0);
@@ -136,8 +136,7 @@ function App() {
         }, 300)
       }
       return true;
-    } 
-    else {
+    } else {
       setResultText("Sorry. Incorrect :(");
       return false;
     }
@@ -145,20 +144,20 @@ function App() {
 
   return (
     <>
-        <div className="login-logout-buttons">
+      <div className="login-logout-buttons">
         {!user ? (
           <div>
-          <button className='login-button' onClick={() => signInWithPopup(auth, provider)}>
-            Log In
-          </button>
-          <p>Please log in.</p>  
+            <button className='login-button' onClick={() => signInWithPopup(auth, provider)}>
+              Log In
+            </button>
+            <p>Please log in.</p>  
           </div>
         ) : (
           <div>
-          <button className='logout-button' onClick={() => signOut(auth)}>
-            Log Out
-          </button>
-          <p>Hi {user.displayName}. You are logged in.</p>
+            <button className='logout-button' onClick={() => signOut(auth)}>
+              Log Out
+            </button>
+            <p>Hi {user.displayName}. You are logged in.</p>
           </div>
         )}
       </div>
