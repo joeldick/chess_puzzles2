@@ -1,32 +1,39 @@
 import { useEffect, useState } from 'react';
-import './App.css';
+import 'App.css';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
-import problems from './assets/problems.json';
-import { db, auth, provider } from './firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import problems from 'assets/problems.json';
+import { auth, provider } from './firebase';
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { unpackSolution } from 'utilities/unpackSolution';
+import { saveUserProgress } from 'utilities/saveUserProgress';
+import { loadUserProgress } from 'utilities/loadUserProgress';
+import { useMst } from 'hooks/useMst';
+import { observer } from 'mobx-react-lite';
 
 const numberOfPuzzles = problems.problems.length;
 
 function App() {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
   const [game, setGame] = useState(new Chess());
-  const [gamePosition, setGamePosition] = useState("");
   const [correctMoves, setCorrectMoves] = useState([]);
   const [correctMoveIndex, setCorrectMoveIndex] = useState(0);
-  const [promptText, setPromptText] = useState("");
-  const [resultText, setResultText] = useState("");
+  const [promptText, setPromptText] = useState('');
+  const [resultText, setResultText] = useState('');
   const [selectedProblemID, setSelectedProblemID] = useState(0);
   const [user, setUser] = useState(null);
+
+  const { gamePosition, setGamePosition } = useMst();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-        loadUserProgress(user.uid).then(progress => {
-          const nextUnsolved = Array.from({ length: numberOfPuzzles }, (_, i) => i + 1).find(i => !progress[i]?.solved);
-          setCurrentProblemIndex((nextUnsolved - 1) || 0);
+        loadUserProgress(user.uid).then((progress) => {
+          const nextUnsolved = Array.from({ length: numberOfPuzzles }, (_, i) => i + 1).find(
+            (i) => !progress[i]?.solved
+          );
+          setCurrentProblemIndex(nextUnsolved - 1 || 0);
         });
       } else {
         setUser(null);
@@ -39,44 +46,6 @@ function App() {
   useEffect(() => {
     goToProblem(currentProblemIndex);
   }, [currentProblemIndex]);
-
-  const saveUserProgress = async (userId, problemId, solved) => {
-    try {
-      const userDocRef = doc(db, "users", userId);
-      const problemData = { solved: solved };
-
-      await setDoc(userDocRef, { [problemId]: problemData }, { merge: true });
-
-    } catch (e) {
-      console.error("Error saving document: ", e);
-    }
-  }
-
-  const loadUserProgress = async (userId) => {
-    try {
-      const docRef = doc(db, "users", userId);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        return docSnap.data();
-      } else {
-        console.log("No such document");
-        return {};
-      }
-    } catch (e) {
-      console.error("Error getting document: ", e);
-      return {};
-    }
-  }
-
-  function unpackSolution(solutionString) {
-    return solutionString.split(";").map(move => {
-      const [from, toAndPromotion] = move.split("-");
-      const to = toAndPromotion.slice(0, 2);
-      const promotion = toAndPromotion.length > 2 ? toAndPromotion[2] : undefined;
-      return { from, to, promotion };
-    });
-  }
 
   function goToProblem(problemID) {
     setCurrentProblemIndex(problemID);
@@ -96,20 +65,18 @@ function App() {
     const currentMove = correctMoves[correctMoveIndex];
 
     if (!currentMove) {
-      setResultText("Invalid move. No further moves expected.");
+      setResultText('Invalid move. No further moves expected.');
       return false;
     }
 
     const { from, to, promotion } = currentMove;
 
     // Check if the move being made is correct
-    if (sourceSquare === from &&
-      targetSquare === to &&
-      (!promotion || promotion === piece[1]?.toLowerCase())) {
+    if (sourceSquare === from && targetSquare === to && (!promotion || promotion === piece[1]?.toLowerCase())) {
       const move = game.move({
         from: sourceSquare,
         to: targetSquare,
-        promotion: piece[1]?.toLowerCase() ?? "q",
+        promotion: piece[1]?.toLowerCase() ?? 'q',
       });
 
       if (move === null) return false;
@@ -117,17 +84,17 @@ function App() {
       setGamePosition(game.fen());
 
       if (game.isCheckmate()) {
-        setResultText("Checkmate! Good job!");
+        setResultText('Checkmate! Good job!');
         setTimeout(() => {
           if (user) {
-            saveUserProgress(user.uid, currentProblemIndex + 1, true)
+            saveUserProgress(user.uid, currentProblemIndex + 1, true);
           }
           setCurrentProblemIndex((currentProblemIndex + 1) % numberOfPuzzles);
         }, 500);
         return true;
       }
 
-      setResultText("Good Move!");
+      setResultText('Good Move!');
 
       // computer makes the next move, if there is one
       const nextMoveIndex = correctMoveIndex + 1;
@@ -136,14 +103,13 @@ function App() {
         setTimeout(() => {
           const computerMove = correctMoves[nextMoveIndex];
           game.move(computerMove);
-          setGamePosition(game.fen())
+          setGamePosition(game.fen());
           setCorrectMoveIndex(nextMoveIndex + 1);
-        }, 300)
+        }, 300);
       }
       return true;
-    }
-    else {
-      setResultText("Sorry. Incorrect :(");
+    } else {
+      setResultText('Sorry. Incorrect :(');
       return false;
     }
   }
@@ -156,14 +122,14 @@ function App() {
       <div id="login-container">
         {!user ? (
           <div>
-            <button className='login-button' onClick={() => signInWithPopup(auth, provider)}>
+            <button className="login-button" onClick={() => signInWithPopup(auth, provider)}>
               Log In
             </button>
             <p id="login-status">Please log in.</p>
           </div>
         ) : (
           <div>
-            <button className='logout-button' onClick={() => signOut(auth)}>
+            <button className="logout-button" onClick={() => signOut(auth)}>
               Log Out
             </button>
             <p id="login-status">Hi {user.displayName}. You are logged in.</p>
@@ -171,13 +137,18 @@ function App() {
         )}
       </div>
       <div id="problem-select-container">
-        <label id='select-problem-text' htmlFor="problem-select">Select problem number: </label>
-        <button className="navigation-button" onClick={() => setCurrentProblemIndex((currentProblemIndex - 1 + numberOfPuzzles) % numberOfPuzzles)}>
+        <label id="select-problem-text" htmlFor="problem-select">
+          Select problem number:{' '}
+        </label>
+        <button
+          className="navigation-button"
+          onClick={() => setCurrentProblemIndex((currentProblemIndex - 1 + numberOfPuzzles) % numberOfPuzzles)}
+        >
           &#9664;
         </button>
-        <select 
+        <select
           id="problem-select"
-          value={selectedProblemID} 
+          value={selectedProblemID}
           onChange={(e) => setSelectedProblemID(parseInt(e.target.value))}
         >
           {Array.from({ length: numberOfPuzzles }, (_, index) => (
@@ -186,8 +157,13 @@ function App() {
             </option>
           ))}
         </select>
-        <button id="go-button" onClick={() => goToProblem(selectedProblemID)}>Go</button>
-        <button className="navigation-button" onClick={() => setCurrentProblemIndex((currentProblemIndex + 1) % numberOfPuzzles)}>
+        <button id="go-button" onClick={() => goToProblem(selectedProblemID)}>
+          Go
+        </button>
+        <button
+          className="navigation-button"
+          onClick={() => setCurrentProblemIndex((currentProblemIndex + 1) % numberOfPuzzles)}
+        >
           &#9654;
         </button>
       </div>
@@ -196,32 +172,26 @@ function App() {
           <h2>Puzzle #{problems.problems[currentProblemIndex].problemid}</h2>
         </div>
         <div id="ChessBoardContainer">
-          <Chessboard 
-            id="ChessBoard" 
-            position={gamePosition} 
+          <Chessboard
+            id="ChessBoard"
+            position={gamePosition}
             onPieceDrop={onDrop}
             customBoardStyle={{
-              borderRadius: "4px",
-              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
+              borderRadius: '4px',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
             }}
             customNotationStyle={{
               fontSize: '12px',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
             }}
           />
         </div>
-        <div id="FENText">
-          FEN: {gamePosition}
-        </div>
-        <div id="PromptText">
-          {promptText}
-        </div>
-        <div id="ResultText">
-          {resultText}
-        </div>
+        <div id="FENText">FEN: {gamePosition}</div>
+        <div id="PromptText">{promptText}</div>
+        <div id="ResultText">{resultText}</div>
       </div>
     </>
-  );  
-}  
+  );
+}
 
-export default App;
+export default observer(App);
