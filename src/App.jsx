@@ -122,7 +122,7 @@ function App() {
           if (user) {
             saveUserProgress(user.uid, currentProblemIndex + 1, true)
           }
-          setCurrentProblemIndex(currentProblemIndex + 1);
+          setCurrentProblemIndex((currentProblemIndex + 1) % numberOfPuzzles);
         }, 500);
         return true;
       }
