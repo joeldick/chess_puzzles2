@@ -5,7 +5,8 @@
   text-align: left;
 }
 
-.login-button, .logout-button {
+.login-button,
+.logout-button {
   padding: 10px 20px;
   font-size: 16px;
   margin: 5px;
@@ -16,7 +17,8 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.login-button:hover, .logout-button:hover {
+.login-button:hover,
+.logout-button:hover {
   background-color: #f0f0f0;
 }
 
@@ -45,7 +47,9 @@
   font-size: 16px;
 }
 
-#problem-select, .navigation-button, #go-button {
+#problem-select,
+.navigation-button,
+#go-button {
   padding: 10px 20px;
   font-size: 16px;
   border: 1px solid #ddd;
@@ -57,7 +61,9 @@
   height: 48px;
 }
 
-#problem-select:hover, .navigation-button:hover, #go-button:hover {
+#problem-select:hover,
+.navigation-button:hover,
+#go-button:hover {
   background-color: #f0f0f0;
 }
 
