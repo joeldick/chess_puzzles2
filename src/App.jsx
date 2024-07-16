@@ -6,6 +6,9 @@ import problems from './assets/problems.json';
 import { db, auth, provider } from './firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import loadUserProgress from './utils/loadUserProgress';
+import saveUserProgress from './utils/saveUserProgress';
+import unpackSolution from './utils/unpackSolution';
 
 const numberOfPuzzles = problems.problems.length;
 
@@ -42,44 +45,6 @@ function App() {
   useEffect(() => {
     goToProblem(currentProblemIndex);
   }, [currentProblemIndex]);
-
-  const saveUserProgress = async (userId, problemId, solved) => {
-    try {
-      const userDocRef = doc(db, 'users', userId);
-      const problemData = { solved: solved };
-
-      await setDoc(userDocRef, { [problemId]: problemData }, { merge: true });
-    } catch (e) {
-      console.error('Error saving document: ', e);
-    }
-  };
-
-  const loadUserProgress = async (userId) => {
-    try {
-      const docRef = doc(db, 'users', userId);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        return docSnap.data();
-      } else {
-        console.log('No such document');
-        return {};
-      }
-    } catch (e) {
-      console.error('Error getting document: ', e);
-      return {};
-    }
-  };
-
-  function unpackSolution(solutionString) {
-    return solutionString.split(';').map((move) => {
-      const [from, toAndPromotion] = move.split('-');
-      const to = toAndPromotion.slice(0, 2);
-      const promotion =
-        toAndPromotion.length > 2 ? toAndPromotion[2] : undefined;
-      return { from, to, promotion };
-    });
-  }
 
   function goToProblem(problemID) {
     setCurrentProblemIndex(problemID);
