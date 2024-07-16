@@ -9,10 +9,13 @@ import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import loadUserProgress from './utils/loadUserProgress';
 import saveUserProgress from './utils/saveUserProgress';
 import unpackSolution from './utils/unpackSolution';
+import useAutoLogout from './utils/useAutoLogout';
 
 const numberOfPuzzles = problems.problems.length;
 
 function App() {
+  useAutoLogout(3600000); // timeout in milliseconds (1 hour)
+
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
   const [game, setGame] = useState(new Chess());
   const [gamePosition, setGamePosition] = useState('');
