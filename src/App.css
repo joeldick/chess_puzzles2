@@ -1,24 +1,53 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: left;
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 2rem;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+/* Style for buttons */
 .login-button,
-.logout-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  margin: 5px;
+.logout-button,
+#problem-select,
+.navigation-button,
+#go-button {
+  padding: 8px;
+  margin: 3px;
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
   background-color: #fff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-size: 10px; /* Minimum font size */
+  flex-grow: 1;
+  flex-shrink: 1;
+  min-width: 0; /* Allow elements to shrink below their content width */
 }
 
+/* Set minimum and maximum width for dropdown */
+#problem-select {
+  min-width: 70px; /* Ensure it can fit the text */
+  max-width: 100px; /* Adjust this value as needed */
+}
+
+/* Hover effect for buttons */
 .login-button:hover,
-.logout-button:hover {
+.logout-button:hover,
+#problem-select:hover,
+.navigation-button:hover,
+#go-button:hover {
   background-color: #f0f0f0;
 }
 
@@ -39,32 +68,25 @@
 #problem-select-container {
   display: flex;
   align-items: center;
+  justify-content: flex-start; /* Left align items */
   margin-bottom: 10px;
+  width: 100%;
+  flex-grow: 0; /* Prevent container from growing too much */
+}
+
+#problem-select-container label,
+#problem-select-container button,
+#problem-select-container select {
+  flex-grow: 0;
+  flex-shrink: 1;
+  margin: 3px;
+  min-width: 0; /* Allow elements to shrink below their content width */
 }
 
 #problem-select-container label {
+  flex-grow: 0;
   margin-right: 10px;
   font-size: 16px;
-}
-
-#problem-select,
-.navigation-button,
-#go-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  margin-right: 5px;
-  height: 48px;
-}
-
-#problem-select:hover,
-.navigation-button:hover,
-#go-button:hover {
-  background-color: #f0f0f0;
 }
 
 #select-problem-text {
@@ -75,17 +97,22 @@
   vertical-align: middle;
 }
 
-.container {
+/* Main header */
+#main-header {
+  flex: 0 1 auto;
+  text-align: left;
+}
+
+#puzzle-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.5rem;
+  justify-content: flex-start;
+  flex: 1 1 auto;
+  overflow: auto;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   box-sizing: border-box;
-  flex-shrink: 1;
-  flex-grow: 1;
-  padding: 1rem;
 }
 
 #ChessBoardContainer {
@@ -93,8 +120,7 @@
   max-width: 400px;
   height: 100%;
   max-height: 400px;
-  flex-shrink: 1;
-  flex-grow: 1;
+  flex: 1 1 auto;
   box-sizing: border-box;
 }
 
@@ -104,5 +130,22 @@
     max-width: 100%;
     height: 100%;
     max-height: 100%;
+  }
+}
+
+/* Additional media queries for fine-tuning */
+@media (max-width: 600px) {
+  #problem-select,
+  #go-button,
+  .navigation-button {
+    font-size: 2.5vw; /* Adjust this value as needed */
+  }
+}
+
+@media (max-width: 400px) {
+  #problem-select,
+  #go-button,
+  .navigation-button {
+    font-size: 2vw; /* Adjust this value as needed */
   }
 }

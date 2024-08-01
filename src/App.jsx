@@ -121,7 +121,7 @@ function App() {
   }
 
   return (
-    <>
+    <div className='app-container'>
       <div id="main-header">
         <h1>Chess Puzzles</h1>
       </div>
@@ -182,7 +182,7 @@ function App() {
           &#9654;
         </button>
       </div>
-      <div className="container" id="PuzzleContainer">
+      <div id="puzzle-container">
         <div id="PuzzleNumberText">
           <h2>Puzzle #{problems.problems[currentProblemIndex].problemid}</h2>
         </div>
@@ -205,7 +205,7 @@ function App() {
         <div id="PromptText">{promptText}</div>
         <div id="ResultText">{resultText}</div>
       </div>
-    </>
+    </div>
   );
 }
 
