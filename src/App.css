@@ -18,12 +18,8 @@ html, body {
 }
 
 /* Style for buttons */
-.login-button,
-.logout-button,
-#problem-select,
-.navigation-button,
-#go-button,
-.FEN-copy-button
+.button,
+#problem-select
 {
   padding: 8px;
   margin: 3px;
@@ -45,12 +41,8 @@ html, body {
 }
 
 /* Hover effect for buttons */
-.login-button:hover,
-.logout-button:hover,
-#problem-select:hover,
-.navigation-button:hover,
-#go-button:hover,
-.FEN-copy-button:hover
+.button:hover,
+#problem-select:hover
 {
   background-color: #f0f0f0;
 }

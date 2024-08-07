@@ -129,7 +129,8 @@ function App() {
         {!user ? (
           <div>
             <button
-              className="login-button"
+              className="button"
+              id="login-button"
               onClick={() => signInWithPopup(auth, provider)}
             >
               Log In
@@ -138,7 +139,10 @@ function App() {
           </div>
         ) : (
           <div>
-            <button className="logout-button" onClick={() => signOut(auth)}>
+            <button 
+              className="button"
+              id="logout-button" 
+              onClick={() => signOut(auth)}>
               Log Out
             </button>
             <p id="login-status">Hi {user.displayName}. You are logged in.</p>
@@ -150,7 +154,8 @@ function App() {
           Select problem number:{' '}
         </label>
         <button
-          className="navigation-button"
+          className="button"
+          id="navigation-button-prev"
           onClick={() =>
             setCurrentProblemIndex(
               (currentProblemIndex - 1 + numberOfPuzzles) % numberOfPuzzles
@@ -170,11 +175,15 @@ function App() {
             </option>
           ))}
         </select>
-        <button id="go-button" onClick={() => goToProblem(selectedProblemID)}>
+        <button 
+          className="button"
+          id="go-button"
+          onClick={() => goToProblem(selectedProblemID)}>
           Go
         </button>
         <button
-          className="navigation-button"
+          className="button"
+          id="navigation-button-next"
           onClick={() =>
             setCurrentProblemIndex((currentProblemIndex + 1) % numberOfPuzzles)
           }
@@ -206,7 +215,8 @@ function App() {
           <div id="FEN-Text">{gamePosition}</div>
           <div id="FEN-Copy-Button-container">
             <button
-              className="FEN-copy-button"
+              className="button"
+              id="FEN-copy-button"
               onClick={() => navigator.clipboard.writeText(gamePosition)}
             >
               Copy
