@@ -89,8 +89,10 @@ function App() {
 
       setGamePosition(game.fen());
 
-      if (game.isCheckmate()) {
-        setResultText('Checkmate! Good job!');
+      const nextMoveIndex = correctMoveIndex + 1;
+
+      if (nextMoveIndex >= correctMoves.length) {
+        setResultText('Puzzle Solved! Good job!');
         setTimeout(() => {
           if (user) {
             saveUserProgress(user.uid, currentProblemIndex + 1, true);
@@ -103,8 +105,6 @@ function App() {
       setResultText('Good Move!');
 
       // computer makes the next move, if there is one
-      const nextMoveIndex = correctMoveIndex + 1;
-
       if (nextMoveIndex < correctMoves.length) {
         setTimeout(() => {
           const computerMove = correctMoves[nextMoveIndex];
