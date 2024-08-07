@@ -201,7 +201,18 @@ function App() {
             }}
           />
         </div>
-        <div id="FENText">FEN: {gamePosition}</div>
+        <div id="FEN-container">
+          <div id="FEN-Label">FEN: </div>
+          <div id="FEN-Text">{gamePosition}</div>
+          <div id="FEN-Copy-Button-container">
+            <button
+              className="FEN-copy-button"
+              onClick={() => navigator.clipboard.writeText(gamePosition)}
+            >
+              Copy
+            </button>
+          </div>
+        </div>
         <div id="PromptText">{promptText}</div>
         <div id="ResultText">{resultText}</div>
       </div>
