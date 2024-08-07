@@ -19,8 +19,7 @@ html, body {
 
 /* Style for buttons */
 .button,
-#problem-select
-{
+#problem-select {
   padding: 8px;
   margin: 3px;
   border: 1px solid #ddd;
@@ -42,8 +41,7 @@ html, body {
 
 /* Hover effect for buttons */
 .button:hover,
-#problem-select:hover
-{
+#problem-select:hover {
   background-color: #f0f0f0;
 }
 
