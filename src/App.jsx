@@ -191,6 +191,29 @@ function App() {
           &#9654;
         </button>
       </div>
+      <div id="problem-type-select-container">
+      <label id="select-problem-type-text" htmlFor="problem-type-select">
+        Or, select problem type:
+      </label>
+      <select
+        id="problem-type-select"
+        value={selectedProblemID}
+        onChange={(e) => setSelectedProblemID(parseInt(e.target.value))}
+      >
+        <option value="0">mates in one</option>
+        <option value="306">mates in two - white to move</option>
+        <option value="1254">mates in two - black to move</option>
+        <option value="3718">mates in three - white to move</option>
+        <option value="4138">mates in three - black to move</option>
+      </select>
+      <button
+        className="button"
+        id="go-type-button"
+        onClick={() => goToProblem(selectedProblemID)}
+      >
+        Go
+      </button>
+      </div>
       <div id="puzzle-container">
         <div id="PuzzleNumberText">
           <h2>Puzzle #{problems.problems[currentProblemIndex].problemid}</h2>

@@ -19,7 +19,8 @@ html, body {
 
 /* Style for buttons */
 .button,
-#problem-select {
+#problem-select,
+#problem-type-select {
   padding: 8px;
   margin: 3px;
   border: 1px solid #ddd;
@@ -34,14 +35,16 @@ html, body {
 }
 
 /* Set minimum and maximum width for dropdown */
-#problem-select {
+#problem-select,
+#problem-type-select {
   min-width: 70px; /* Ensure it can fit the text */
   max-width: 100px; /* Adjust this value as needed */
 }
 
 /* Hover effect for buttons */
 .button:hover,
-#problem-select:hover {
+#problem-select:hover,
+#problem-type-select:hover {
   background-color: #f0f0f0;
 }
 
@@ -59,7 +62,8 @@ html, body {
   vertical-align: middle;
 }
 
-#problem-select-container {
+#problem-select-container,
+#problem-type-select-container {
   display: flex;
   align-items: center;
   justify-content: flex-start; /* Left align items */
@@ -70,20 +74,25 @@ html, body {
 
 #problem-select-container label,
 #problem-select-container button,
-#problem-select-container select {
+#problem-select-container select,
+#problem-type-select-container label,
+#problem-type-select-container button,
+#problem-type-select-container select {
   flex-grow: 0;
   flex-shrink: 1;
   margin: 3px;
   min-width: 0; /* Allow elements to shrink below their content width */
 }
 
-#problem-select-container label {
+#problem-select-container label,
+#problem-type-select-container label {
   flex-grow: 0;
   margin-right: 10px;
   font-size: 16px;
 }
 
-#select-problem-text {
+#select-problem-text,
+#select-problem-type-text {
   margin-left: 10px;
   font-size: 16px;
   color: #333;
